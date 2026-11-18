@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1a0e1e">
+<title>Une invitation pour toi 🎬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500;1,6..96,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1a0e1e; --velvet:#7a1a3e; --velvet-dark:#470d24;
+  --cream:#f7ead2; --rose:#f0a7a0; --muted:#c9b3c2; --card:#2a1830;
+  --serif:"Bodoni Moda","Didot","Georgia",serif;
+  --sans:"Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{height:100%}
+body{
+  min-height:100%; font-family:var(--sans); color:var(--cream);
+  background:radial-gradient(120% 80% at 50% 0%,#3a1a40 0%,var(--bg) 60%) fixed;
+  padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
+  -webkit-font-smoothing:antialiased;
+}
+body.locked{overflow:hidden;height:100dvh}
+
+/* ============ RIDEAU ============ */
+.curtains{position:fixed;inset:0;z-index:20;pointer-events:none}
+.curtain{
+  position:absolute;top:0;bottom:0;width:51%;
+  background:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.28) 0 6px,rgba(255,255,255,.06) 6px 14px,transparent 14px 30px),
+    linear-gradient(180deg,var(--velvet),var(--velvet-dark));
+  box-shadow:0 0 60px rgba(0,0,0,.6);
+  transition:transform 1.8s cubic-bezier(.7,0,.2,1);
+}
+.curtain.l{left:0;transform-origin:left}
+.curtain.r{right:0}
+.open .curtain.l{transform:translateX(-102%)}
+.open .curtain.r{transform:translateX(102%)}
+.cover{
+  position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;gap:1.6rem;
+  padding:2rem;transition:opacity .6s ease;
+}
+.cover h2{font:italic 500 clamp(2rem,9vw,3.4rem)/1.1 var(--serif);max-width:12ch}
+.cover p{color:var(--muted);font-weight:300;max-width:26ch}
+.open .cover{opacity:0;pointer-events:none}
+
+/* ============ BOUTONS ============ */
+.btn{
+  font:500 1.05rem var(--sans);border:0;border-radius:999px;cursor:pointer;
+  padding:1rem 1.8rem;min-height:3.2rem;transition:transform .2s,background .2s;
+}
+.btn:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
+.btn.primary{background:var(--cream);color:#2b1030}
+.btn.primary:active{transform:scale(.96)}
+.btn.ghost{background:transparent;color:var(--cream);border:1.5px solid rgba(247,234,210,.4)}
+
+/* ============ BILLET ============ */
+main{display:flex;justify-content:center;padding:1.5rem 1rem 3rem}
+.ticket{
+  width:100%;max-width:430px;background:var(--card);border-radius:28px;
+  overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55);
+  border:1px solid rgba(247,234,210,.1);
+}
+.poster{aspect-ratio:2/3;max-height:62vh;width:100%;position:relative;background:#120816}
+.poster img{width:100%;height:100%;object-fit:cover;display:block}
+.poster::after{content:"";position:absolute;inset:auto 0 0;height:40%;background:linear-gradient(transparent,var(--card))}
+.content{padding:0 1.6rem 1.8rem;margin-top:-2.2rem;position:relative;z-index:1}
+.lead{font-weight:300;color:var(--muted);font-size:1.05rem;margin-bottom:.4rem}
+.title{font:italic 700 clamp(2.3rem,11vw,3.2rem)/1.02 var(--serif);margin-bottom:1rem;text-wrap:balance}
+.synopsis{font-weight:300;line-height:1.6;color:#e5d6dd;font-size:1rem;max-width:60ch}
+
+.perf{position:relative;margin:1.6rem -1.6rem;border-top:2px dashed rgba(247,234,210,.25)}
+.perf::before,.perf::after{content:"";position:absolute;top:-14px;width:26px;height:26px;border-radius:50%;background:var(--bg)}
+.perf::before{left:-13px}.perf::after{right:-13px}
+
+.when{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem 1rem}
+.when div:last-child{grid-column:1/-1}
+.when dt{font-size:.85rem;color:var(--rose);margin-bottom:.15rem}
+.when dd{font:500 1.35rem/1.2 var(--serif)}
+.when .big{font-size:1.5rem}
+
+.note{margin-top:1.6rem;font:italic 500 1.2rem/1.4 var(--serif);color:var(--cream);text-wrap:balance}
+.actions{display:flex;flex-direction:column;gap:.9rem;margin-top:1.8rem;position:relative;min-height:7.5rem}
+.actions .btn{width:100%}
+#maybe{transition:transform .35s cubic-bezier(.3,1.6,.5,1),background .2s}
+
+.answer{display:none;text-align:center;margin-top:1.8rem}
+.answer.show{display:block;animation:pop .6s cubic-bezier(.3,1.5,.5,1)}
+.answer h3{font:italic 700 2rem/1.1 var(--serif);margin-bottom:.6rem}
+.answer p{color:var(--muted);font-weight:300;margin-bottom:1.2rem;line-height:1.5}
+.answer a{display:inline-block;text-decoration:none}
+@keyframes pop{from{transform:scale(.8);opacity:0}to{transform:none;opacity:1}}
+#confetti{position:fixed;inset:0;z-index:40;pointer-events:none}
+
+@media (prefers-reduced-motion:reduce){
+  .curtain{transition-duration:.01s}.answer.show{animation:none}
+}
+</style>
+</head>
+<body class="locked">
+
+<!-- RIDEAU D’OUVERTURE -->
+<div class="curtains" aria-hidden="true"><div class="curtain l"></div><div class="curtain r"></div></div>
+<section class="cover" id="cover">
+  <h2>Une invitation t’attend</h2>
+  <p>Rien que pour toi.</p>
+  <button class="btn primary" id="openBtn">Ouvrir le rideau</button>
+</section>
+
+<main>
+  <article class="ticket">
+
+    <!-- ✏️ À MODIFIER : l’affiche du film.
+         Mets ton image (ex. affiche.jpg) dans le même dossier que ce fichier
+         et remplace le src ci-dessous par src="affiche.jpg" -->
+    <div class="poster">
+      <img id="poster" alt="Affiche du film"
+        src="data:image/svg+xml,%3Csvg xmlns='https://kmohammedbadreddine.github.io/Image/hungergames.jpg' viewBox='0 0 400 600'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23c0394f'/%3E%3Cstop offset='1' stop-color='%23241033'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='600' fill='url(%23g)'/%3E%3Ctext x='200' y='300' fill='%23f7ead2' font-family='Georgia,serif' font-size='26' font-style='italic' text-anchor='middle'%3EL’affiche du film%3C/text%3E%3Ctext x='200' y='336' fill='%23f7ead2' font-family='Georgia,serif' font-size='26' font-style='italic' text-anchor='middle'%3Eira ici%3C/text%3E%3C/svg%3E">
+    </div>
+
+    <div class="content">
+      <!-- ✏️ À MODIFIER : prénom + titre du film -->
+      <p class="lead">Hajar, et si on allait voir…</p>
+      <h1 class="title" id="film">Le Titre du Film</h1>
+
+      <!-- ✏️ À MODIFIER : résumé du film -->
+      <p class="synopsis">Écris ici le résumé du film en deux ou trois phrases. Assez pour donner envie, pas assez pour tout raconter.</p>
+
+      <div class="perf"></div>
+
+      <!-- ✏️ À MODIFIER : date, heure, cinéma -->
+      <dl class="when">
+        <div><dt>Quand</dt><dd class="big" id="date">Samedi 22 novembre</dd></div>
+        <div><dt>À quelle heure</dt><dd class="big" id="time">20h30</dd></div>
+        <div><dt>Où</dt><dd id="cinema">Cinéma Le Grand Rex, Paris</dd></div>
+      </dl>
+
+      <!-- ✏️ À MODIFIER : ton petit mot perso -->
+      <p class="note">Je t’invite. Le popcorn est pour moi.</p>
+
+      <div class="actions" id="actions">
+        <button class="btn primary" id="yes">Oui, avec plaisir !</button>
+        <button class="btn ghost" id="maybe">Je vais réfléchir…</button>
+      </div>
+
+      <div class="answer" id="answer" role="status" aria-live="polite">
+        <h3>C’est noté !</h3>
+        <p id="answerText"></p>
+        <!-- ✏️ À MODIFIER : ton numéro (format international) pour qu’elle puisse te répondre par SMS -->
+        <a class="btn primary" id="sms" href="sms:+33778176921?body=Oui%20avec%20plaisir%20!%20%F0%9F%8D%BF">Te répondre par message</a>
+      </div>
+    </div>
+  </article>
+</main>
+
+<canvas id="confetti"></canvas>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Ouverture du rideau */
+  $('openBtn').addEventListener('click',function(){
+    document.body.classList.add('open');
+    setTimeout(function(){
+      document.body.classList.remove('locked');
+      document.querySelector('.curtains').remove();
+      $('cover').remove();
+      window.scrollTo(0,0);
+    },reduce?50:1800);
+  });
+
+  /* Bouton « réfléchir » qui s’esquive, puis finit par céder */
+  var tries=0,maybe=$('maybe');
+  var labels=['Hmm, attends…','Tu es sûre ?','Dernière chance…','Bon… d’accord, oui !'];
+  function dodge(e){
+    e.preventDefault();
+    if(tries>=labels.length-1){yes();return}
+    maybe.textContent=labels[tries];
+    tries++;
+    var x=(Math.random()-.5)*120,y=(Math.random()-.5)*60;
+    maybe.style.transform='translate('+x+'px,'+y+'px)';
+    if(tries===labels.length-1){maybe.textContent=labels[tries];maybe.style.transform='none';maybe.classList.remove('ghost');maybe.classList.add('primary')}
+  }
+  maybe.addEventListener('click',dodge);
+
+  /* Réponse positive */
+  var done=false;
+  function yes(){
+    if(done)return;done=true;
+    $('actions').style.display='none';
+    $('answerText').textContent='Rendez-vous '+$('date').textContent.toLowerCase()+' à '+$('time').textContent+', '+$('cinema').textContent+'.';
+    $('answer').classList.add('show');
+    $('answer').scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+    if(!reduce)confetti();
+  }
+  $('yes').addEventListener('click',yes);
+
+  /* Confettis */
+  function confetti(){
+    var c=$('confetti'),ctx=c.getContext('2d'),dpr=window.devicePixelRatio||1;
+    c.width=innerWidth*dpr;c.height=innerHeight*dpr;ctx.scale(dpr,dpr);
+    var cols=['#f7ead2','#f0a7a0','#c0394f','#e8c36a','#ffffff'];
+    var p=Array.from({length:110},function(){return{
+      x:innerWidth/2,y:innerHeight*.65,
+      vx:(Math.random()-.5)*16,vy:-Math.random()*17-5,
+      s:Math.random()*8+4,r:Math.random()*6,vr:(Math.random()-.5)*.4,
+      col:cols[Math.floor(Math.random()*cols.length)]}});
+    var t0=performance.now();
+    (function tick(t){
+      ctx.clearRect(0,0,innerWidth,innerHeight);
+      p.forEach(function(q){
+        q.vy+=.35;q.vx*=.99;q.x+=q.vx;q.y+=q.vy;q.r+=q.vr;
+        ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.r);
+        ctx.fillStyle=q.col;ctx.fillRect(-q.s/2,-q.s/4,q.s,q.s/2);ctx.restore();
+      });
+      if(t-t0<4200)requestAnimationFrame(tick);else ctx.clearRect(0,0,innerWidth,innerHeight);
+    })(t0);
+  }
+})();
+</script>
+</body>
+</html>
